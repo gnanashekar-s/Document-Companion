@@ -32,7 +32,7 @@ def search_files(folder_paths, keyword):
             search_results[folder_path] = results
 
     return ranking
-
+"""
 def open_file(file_path):
     os.startfile(file_path)
 
@@ -56,7 +56,7 @@ if values:
     print(f"\nRanked Results:\n{ranked_results}")
 else:
     print("No results found.")
-
+"""
 # Uncomment below to print details about found results
 """
 if len(search_results) > 0:
