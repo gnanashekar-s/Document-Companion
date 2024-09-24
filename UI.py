@@ -1,6 +1,6 @@
 import streamlit as st
 import freq_based_ranking
-#import summariser
+import summariser
 import webbrowser  # Import webbrowser to open the file
 import webbrowser
 import os
@@ -88,11 +88,11 @@ if st.session_state["search_results"]:
             with col_button2:
                 if st.button("Summarize", key=f"summarize_{count}"):
                     # Call a hypothetical summarize function (replace with actual logic)
-                    st.write(f"Summarizing content from {file_path[1]}...")
+                    #st.write(f"Summarizing content from {file_path[1]}...")
 
                     #st.write(st.session_state["pdf_texts"][file_path])
-                    #summary = freq_based_ranking.summarize_file(file_path[0])
-                    #st.write(summary)
+                    summary = summariser.summarize_file(st.session_state["pdf_texts"][file_path])
+                    st.write(summary)
     
 
             # Tap to Hear button (placeholder for your text-to-speech function)
