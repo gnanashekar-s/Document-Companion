@@ -85,6 +85,7 @@ if st.session_state["search_results"]:
 
             # Add "Summarize" button 
             # Summarize button (placeholder for your summarizer function)
+            summary = None
             with col_button2:
                 if st.button("Summarize", key=f"summarize_{count}"):
                     # Call a hypothetical summarize function (replace with actual logic)
@@ -92,7 +93,7 @@ if st.session_state["search_results"]:
 
                     #st.write(st.session_state["pdf_texts"][file_path])
                     summary = summariser.summarize_file(st.session_state["pdf_texts"][file_path])
-                    st.write(summary)
+                    st.write("Sumarizing...")
     
 
             # Tap to Hear button (placeholder for your text-to-speech function)
@@ -101,6 +102,9 @@ if st.session_state["search_results"]:
                     # Call a hypothetical text-to-speech function (replace with actual logic)
                     st.write(f"Playing audio for {file_path[1]}...")
                     #freq_based_ranking.text_to_speech(file_path[0])
+            if summary:
+                with st.expander(f"Summary of {os.path.basename(file_path)}"):
+                    st.write(summary)
 
         
             st.divider()
