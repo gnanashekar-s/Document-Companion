@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import numpy as np
 import freq_based_ranking
-import summariser
+#import summariser
 import webbrowser  # Import webbrowser to open the file
 
 st.title("PDF Keyword Search Tool")

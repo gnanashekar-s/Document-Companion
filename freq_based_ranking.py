@@ -9,6 +9,7 @@ def search_files(folder_paths, keyword):
     for folder_path in folder_paths:
         results = []
         for root, dirs, files in os.walk(folder_path):
+            print(root,files)
             for file in files:
                 if file.endswith(".pdf"):
                     file_path = os.path.join(root, file)
