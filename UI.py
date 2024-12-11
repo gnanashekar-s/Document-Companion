@@ -5,14 +5,18 @@ import os
 import shutil
 import atexit  # To handle cleanup at the end of the program
 from audio import audio, stop_audio  
+from web_search import search_wikipedia  # Import the Wikipedia search function
 
-def dict_to_string(dictionary):
-    string = ""
-    for key in dictionary:
-        string += key+ " " +dictionary[key]
-    return string
-
-
+def dict_to_string(content):
+    if isinstance(content, str):
+        return content  # If content is a string, return it directly
+    elif isinstance(content, dict):
+        string = ""
+        for key, value in content.items():
+            string += f"{key}: {value}\n"
+        return string
+    else:
+        return ""
 
 # Create temp_audio directory if it doesn't exist
 if not os.path.exists('temp_audio'):
@@ -61,7 +65,18 @@ if st.button('Submit'):
     else:
         st.error("Please process PDFs and enter a keyword before searching.")
 
-# Step 3: Display Results and Integrate Text-to-Speech
+# Step 3: Wikipedia Summary Search
+if keyword:
+    if st.button("Search Wikipedia"):
+        with st.spinner("Fetching Wikipedia summary..."):
+            wiki_summary = search_wikipedia(keyword)  # Call the Wikipedia search function
+            if wiki_summary:
+                st.success("Wikipedia summary retrieved!")
+                st.write(wiki_summary)  # Display the summary
+            else:
+                st.warning("No summary found or an error occurred.")
+
+# Step 4: Display Results and Integrate Text-to-Speech
 if st.session_state["search_results"]:
     ranked_results = st.session_state["search_results"]
     count = 0
@@ -91,7 +106,7 @@ if st.session_state["search_results"]:
                 if st.button("Summarize", key=f"summarize_{count}"):
                     # Check if the summary already exists in session_state
                     if file_path not in st.session_state["summaries"]:
-                        summary = summariser.summarize_file(st.session_state["pdf_texts"][file_path][1])
+                        summary = summariser.summarize_file(st.session_state["pdf_texts"][file_path][0])
                         st.session_state["summaries"][file_path] = summary
                     else:
                         summary = st.session_state["summaries"][file_path]
@@ -99,14 +114,17 @@ if st.session_state["search_results"]:
             # Display the summary (if any) in an expander
             if file_path in st.session_state["summaries"]:
                 with st.expander(f"Summary of {os.path.basename(file_path)}", expanded=True):
-                    if type(st.session_state["summaries"][file_path]) == str:
-                        st.write(st.session_state["summaries"][file_path])
-                    elif type(st.session_state["summaries"][file_path]) == dict:
-                        for section,summarised_content in (st.session_state["summaries"][file_path]).items():
+                    summary_content = st.session_state["summaries"][file_path]
+                    
+                    # Display summary content
+                    if isinstance(summary_content, str):
+                        st.write(summary_content)
+                    elif isinstance(summary_content, dict):
+                        for section, content in summary_content.items():
                             st.subheader(section)
-                            st.write(summarised_content)
+                            st.write(content)
 
-                    # Add Tap to Hear button within the expander for summarized content
+                    # "Tap to Hear" button for summarized content
                     if st.button("Tap to Hear", key=f"hear_summary_{count}"):
                         # Create a unique path for the audio file in a temporary directory
                         audio_file_path = os.path.join('temp_audio', f"summary_audio_{count}.wav")
@@ -115,7 +133,7 @@ if st.session_state["search_results"]:
                         # Store the audio path in session_state
                         st.session_state["audio_paths"][file_path] = audio_file_path
 
-                    # Display audio player if the file was generated
+                    # Display audio player if the file was generated successfully
                     if file_path in st.session_state["audio_paths"]:
                         audio_path = st.session_state["audio_paths"][file_path]
                         if os.path.exists(audio_path):
